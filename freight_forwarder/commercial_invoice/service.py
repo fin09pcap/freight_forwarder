@@ -254,6 +254,8 @@ class Service(object):
 
                 if service.host_config.volumes_from:
                     for volume_from in service.host_config.volumes_from:
+                        # TODO - validate - this is broken and if there is similarly named services this will register all
+                        # dependents but associate additional images that will need to be validated
                         if self.name in volume_from:
                             self._dependents[service.name] = service
 
