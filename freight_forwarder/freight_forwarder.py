@@ -341,7 +341,8 @@ class FreightForwarder(object):
                     self.__dispatch_export_no_validation(container_ship, transport_service, configs, use_cache)
 
                 # export image.
-                container_ship.export(transport_service, commercial_invoice.tags)
+                if self._bill_of_lading and not self._bill_of_lading.get('failures'):
+                    container_ship.export(transport_service, commercial_invoice.tags)
 
                 # remove all of the containers used for testing.
                 container_ship.offload_all_service_containers(transport_service)
