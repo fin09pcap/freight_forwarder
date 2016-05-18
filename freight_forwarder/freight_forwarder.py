@@ -24,7 +24,7 @@ class FreightForwarder(object):
     and ship yards. it will also handle fleet orchestration and discovery. If no config is present then a invoice /
     shipping and receiving port must be provided.
     """
-    def __init__(self, config_path_override=None, verbose=True):
+    def __init__(self, config_path_override=None, verbose=False):
         # create config
         self._config = Config(path_override=config_path_override, verbose=verbose)
 
@@ -340,7 +340,10 @@ class FreightForwarder(object):
                 else:
                     self.__dispatch_export_no_validation(container_ship, transport_service, configs, use_cache)
 
-                # export image.
+                if self.__verify_for_export(container_ship, transport_service) is False:
+                    return False
+
+                # export image
                 container_ship.export(transport_service, commercial_invoice.tags)
 
                 # remove all of the containers used for testing.
@@ -663,3 +666,25 @@ class FreightForwarder(object):
             )
 
         return commercial_invoice
+
+    def __verify_for_export(self, container_ship, transport_service):
+        """
+        Verify the bill of lading has no failures for the defined transport_service while exporting
+        :param container_ship:
+        :param transport_service:
+        :return:
+        """
+        verified = True
+        if self._bill_of_lading and self._bill_of_lading.get('failures'):
+            failures = self._bill_of_lading.get('failures')
+            if container_ship.url.geturl() in failures:
+                failed_services = failures[container_ship.url.geturl()]
+                for service in failed_services:
+                    if transport_service == service:
+                        verified = False
+                    else:
+                        pass
+
+            return verified
+        else:
+            return verified
