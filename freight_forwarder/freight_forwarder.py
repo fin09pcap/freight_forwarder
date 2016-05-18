@@ -143,7 +143,21 @@ class FreightForwarder(object):
 
                 # during a deploy always restart containers on failure. if detach is true.
                 if transport_service.container_config.detach:
+                    # TODO - two solutions for this, should we iterage over all the definded services
+                    # in the commecial_invoice or say, only update the dependents and dependencies
+                    # or should this be updated in the service definition to say if detach is true in container_confi,
+                    # modify restart_options to whatever...
                     transport_service.host_config.restart_policy = {"maximum_retry_count": 5, "name": "always"}
+                    dependency_services = transport_service.dependencies
+                    dependent_services = transport_service.dependents
+                    for name, service in dependency_services.items():
+                        if service.container_config.detach:
+                            service.host_config.restart_policy = {"maximum_retry_count": 5, "name": "always"}
+                        logger.info("Configured restart policy on all dependency '{0}'".format(name))
+                    for name, service in dependent_services.items():
+                        if service.container_config.detach:
+                            service.host_config.restart_policy = {"maximum_retry_count": 5, "name": "always"}
+                        logger.info("Configured restart policy on all dependency '{0}'".format(name))
 
                 # validate service configs for deployment
                 self.__service_deployment_validation(transport_service)
