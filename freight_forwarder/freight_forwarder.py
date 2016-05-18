@@ -335,7 +335,7 @@ class FreightForwarder(object):
                 else:
                     self.__dispatch_export_no_validation(container_ship, transport_service, configs, use_cache)
 
-                if self.__verify_for_export(container_ship, transport_service) == False:
+                if self.__verify_for_export(container_ship, transport_service) is False:
                     return False
 
                 # export image
@@ -684,5 +684,3 @@ class FreightForwarder(object):
             return verified
         else:
             return verified
-
-
