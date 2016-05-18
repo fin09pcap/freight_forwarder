@@ -335,7 +335,7 @@ class FreightForwarder(object):
                 else:
                     self.__dispatch_export_no_validation(container_ship, transport_service, configs, use_cache)
 
-                if self._bill_of_lading and self._bill_of_lading.get('failures'):
+                if self.__verify_for_export(container_ship, transport_service) == False:
                     return False
 
                 # export image
@@ -662,3 +662,27 @@ class FreightForwarder(object):
             )
 
         return commercial_invoice
+
+    def __verify_for_export(self, container_ship, transport_service):
+        """
+        Verify the bill of lading has no failures for the defined transport_service while exporting
+        :param container_ship:
+        :param transport_service:
+        :return:
+        """
+        verified = True
+        if self._bill_of_lading and self._bill_of_lading.get('failures'):
+            failures = self._bill_of_lading.get('failures')
+            if container_ship.url.geturl() in failures:
+                failed_services = failures[container_ship.url.geturl()]
+                for service in failed_services:
+                    if transport_service == service:
+                        verified = False
+                    else:
+                        pass
+
+            return verified
+        else:
+            return verified
+
+
