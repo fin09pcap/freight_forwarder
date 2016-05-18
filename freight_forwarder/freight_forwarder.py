@@ -336,7 +336,7 @@ class FreightForwarder(object):
                     self.__dispatch_export_no_validation(container_ship, transport_service, configs, use_cache)
 
                 if self._bill_of_lading and self._bill_of_lading.get('failures'):
-                    return False# export image.
+                    return False
 
                 # export image
                 container_ship.export(transport_service, commercial_invoice.tags)
@@ -439,7 +439,6 @@ class FreightForwarder(object):
             logger.error(
                 "failed while dispatching service: {0} on host: {1}.".format(service.name, container_ship.url.geturl())
             )
-            raise Exception('shit be jacked')
 
     def __dispatch_export_no_validation(self, container_ship, transport_service, configs, use_cache):
         try:

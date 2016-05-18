@@ -114,6 +114,9 @@ class Container(object):
             if e.response.status_code == 404:
                 logger.info('is unable to located.', extra={'formatter': 'container', 'container': self.name})
             else:
+                # TODO - discuss on logic around whether a docker api error should be considered a failure and raised
+                # example scenario, dead docker that cannot be deleted due to a device or resource busy, should this fail an export
+                # or deployment, is this separate
                 raise APIError("Docker Error: {0}".format(e.explanation), e.response)
 
         return response
@@ -242,7 +245,7 @@ class Container(object):
                         msg = '{0} {1}'.format(msg, logs)
         else:
             logs = self.client.logs(self.id, stdout=True, stderr=True, stream=False, timestamps=False, tail='all')
-            if isinstance(logs, six.string_types):
+            if isinstance(logs, (six.binary_type, six.string_types)):
                 logs = logs.decode(encoding='utf-8', errors="ignore")
 
             msg = '{0} {1}'.format(msg, logs)
