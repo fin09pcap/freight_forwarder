@@ -40,6 +40,14 @@ class CliMixin(object):
             help="What service would you like do export / deploy?  defaults to 'all'."
         )
 
+        self._parser.add_argument(
+            '-D', '--debug',
+            required=False,
+            action='store_true',
+            default=False,
+            help='Allow build to use cached image layers.'
+        )
+
 
 class NormalizeValue(argparse.Action):
     """
