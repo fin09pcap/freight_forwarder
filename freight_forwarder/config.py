@@ -475,7 +475,6 @@ ROOT_SCHEME = {
                 },
                 'config': {
                     'is': {
-                        'required': ['syslog-facility'],
                         'type': dict
                     },
                     'syslog-facility': {
@@ -634,6 +633,31 @@ ROOT_SCHEME = {
             'restart': {
                 'is': {
                     'type': dict
+                },
+                'policy_name': {
+                    'is': {
+                        'type': six.string_types
+                    }
+                },
+                'maximum_retry_count': {
+                    'is': {
+                        'type': int
+                    }
+                }
+            },
+            'restart_policy': {
+                'is': {
+                    'type': dict
+                },
+                'policy_name': {
+                    'is': {
+                        'type': six.string_types
+                    }
+                },
+                'maximum_retry_count': {
+                    'is': {
+                        'type': int
+                    }
                 }
             },
             'security_opt': {

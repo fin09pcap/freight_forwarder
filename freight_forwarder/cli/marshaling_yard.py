@@ -12,6 +12,7 @@ class MarshalingYardCommand(object):
     """ MarshalingYard interacts with a docker registry and provides information concerning the images and tags.
 
       - ``--alias``        (optional) - The registry alias defined in freight-forwarder config file. defaults: 'default'.
+      - ``--verbose``      (optional) - Enable verbose output for selected action
 
       One of the options is required
 
@@ -53,6 +54,14 @@ class MarshalingYardCommand(object):
             default='default',
             type=str,
             help='registry alias created in freight-forwarder.yml. Example: tune_dev'
+        )
+
+        self._parser.add_argument(
+            '-D', '--verbose',
+            required=False,
+            action='store_true',
+            default=False,
+            help='enable verbose output'
         )
 
 
