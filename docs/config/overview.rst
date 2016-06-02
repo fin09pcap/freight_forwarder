@@ -403,7 +403,7 @@ log_config            False    dict          json-file                | Defined 
                                                                       | docker engine version
                                                                       | Default Value:
                                                                       | {
-                                                                      |  "type": json-file,
+                                                                      |  "type": "json-file",
                                                                       |  "config": {
                                                                       |    "max-files": "2",
                                                                       |    "max-size": "100m"

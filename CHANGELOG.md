@@ -3,6 +3,10 @@
 
 ## [1.0.4-dev] - 2016-05-23
 * resolved bug in logic of `FreightForwarder.export` to verify `bill_of_lading` before starting the export operation
+* updated schema to support `restart` or `restart_policy` in freight-forwarder configuration file
+* removed requirement for `syslog-facility` in `log_config`
+* added additional method to change the restart options to a sane value if not defined for for a deploy operation 
+
 
 ## [1.0.3-dev] - 2016-05-18
 * host service definition normalized to match service alias allowing for all host container ships to be 

@@ -17,6 +17,9 @@ environments:
         config:
           syslog-tag: 'elasticsearch-data'
           syslog-facility: 'local6'
+      restart_policy:
+        policy_name: 'on-failure'
+        maximum_retry_count: 15
 
 
 

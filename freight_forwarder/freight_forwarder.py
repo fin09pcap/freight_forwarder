@@ -141,9 +141,8 @@ class FreightForwarder(object):
                 if env:
                     transport_service.container_config.merge_env(env)
 
-                # during a deploy always restart containers on failure. if detach is true.
-                if transport_service.container_config.detach:
-                    transport_service.host_config.restart_policy = {"maximum_retry_count": 5, "name": "always"}
+                # during a deploy, evaluate restart_policy for transport_service and dependents/dependencies
+                self.__configure_restart_policy(transport_service)
 
                 # validate service configs for deployment
                 self.__service_deployment_validation(transport_service)
@@ -688,3 +687,23 @@ class FreightForwarder(object):
             return verified
         else:
             return verified
+
+    def __configure_restart_policy(self, transport_service):
+        """
+        Configure Restart Policy for transport_service and dependents / dependencies based on previously configured
+        values and if detach has been passed for the service definition
+        :param transport_service:
+        :return:
+        """
+        # TODO - evaluate, this might not be optimal for all services but establishes a guideline
+
+        if transport_service.container_config.detach and transport_service.host_config.restart_policy == {}:
+            transport_service.host_config.restart_policy = {'name': 'on-failure', 'maximum_retry_count': 5}
+        for name, service in transport_service.dependencies.items():
+            if service.container_config.detach and service.host_config.restart_policy == {}:
+                service.host_config.restart_policy = {'name': 'on-failure', 'maximum_retry_count': 5}
+            logger.info("Configured restart policy on dependency '{0}'".format(name))
+        for name, service in transport_service.dependents.items():
+            if service.container_config.detach and service.host_config.restart_policy == {}:
+                service.host_config.restart_policy = {'name': 'on-failure', 'maximum_retry_count': 5}
+            logger.info("Configured restart policy on dependency '{0}'".format(name))

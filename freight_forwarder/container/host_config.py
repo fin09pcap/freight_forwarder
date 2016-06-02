@@ -67,6 +67,19 @@ VALID_LOG_DRIVER_TYPES = (
     'none'
 )
 
+VALID_RESTART_POLICY = (
+    'policy_name',
+    'name', 'maximum_retry_count'
+)
+ALLOWED_POLICY_NAMES = (
+    'on-failure',
+    'always',
+    'None',
+    'none',
+    '',
+    None
+)
+
 
 class HostConfig(object):
     def __init__(self, properties={}):
@@ -137,6 +150,8 @@ class HostConfig(object):
 
     def docker_py_dict(self):
         """
+        Modification of HostConfig object to pass to docker-py. Dictionaries need to be modified here before
+        being passed to docker-py match expected keys for the host configuration generation
         """
         return {
             'binds': self._binds,
@@ -149,7 +164,7 @@ class HostConfig(object):
             'dns_search': self._dns_search,
             'volumes_from': self._volumes_from,
             'network_mode': self._network_mode,
-            'restart_policy': self._restart_policy,
+            'restart_policy': capitalize_keys(self._restart_policy) if self._restart_policy else self._restart_policy,
             'cap_add': self._cap_add,
             'cap_drop': self._cap_drop,
             'devices': self._devices,
@@ -481,8 +496,46 @@ class HostConfig(object):
 
     @restart_policy.setter
     def restart_policy(self, value):
-        # TODO: Validation
-        self._restart_policy = value
+        """
+        Evaluate restart_policy
+
+        .. code-block:: javascript
+            {
+                "RestartPolicy": {
+                    "Name": "",
+                    "MaximumRetryCount": 0
+            }
+
+        :param value: dict:
+        :return:
+        """
+        if not isinstance(value, dict):
+            raise TypeError("restart_policy is required to be a dict")
+
+        if value == {} or None:
+            self._restart_policy = {}
+        else:
+            restart_policy = {}
+            for key in value.keys():
+                if key not in VALID_RESTART_POLICY:
+                    raise ValueError("key \'{0}\' is not an allowed key value for restart_policy".format(key))
+
+            name = value.get('policy_name') or value.get('name')
+            maximum_retry_count = value.get('maximum_retry_count', 5)
+
+            if name not in ALLOWED_POLICY_NAMES:
+                raise ValueError("Defined policy is not in allowed restart_polices. \n"
+                                 "Allowed policies are \'{0}\'".format(ALLOWED_POLICY_NAMES))
+
+            if name == 'always':
+                    restart_policy['name'] = name
+            elif name == 'on-failure':
+                restart_policy['name'] = name
+                restart_policy['maximum_retry_count'] = maximum_retry_count if maximum_retry_count else 5
+            elif name == 'none' or name == 'None':
+                restart_policy['name'] = name
+
+            self._restart_policy = restart_policy
 
     @property
     def ulimits(self):

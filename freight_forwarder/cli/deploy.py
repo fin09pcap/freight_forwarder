@@ -12,7 +12,9 @@ from .cli_mixin              import CliMixin
 class DeployCommand(CliMixin):
     """ The deploy command pulls an image from a Docker registry, stops the previous running containers, creates and starts
     new containers, and cleans up the old containers and images on a docker host. If the new container fails to start,
-    the previous container is restarted and the most recently created containers and image are removed.
+    the previous container is restarted and the most recently created containers and image are removed. A deployed
+    container by default will be configured with a restart_policy of `on-failure` with a `maximum_retry_count` of 5 for
+    the deployed service and all of its dependent and dependency services.
 
     :options:
       - ``-h, --help``      (info) - Show the help message
