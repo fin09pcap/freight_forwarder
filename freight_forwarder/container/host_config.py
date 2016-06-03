@@ -67,6 +67,19 @@ VALID_LOG_DRIVER_TYPES = (
     'none'
 )
 
+VALID_RESTART_POLICY = (
+    'policy_name',
+    'name', 'maximum_retry_count'
+)
+ALLOWED_POLICY_NAMES = (
+    'on-failure',
+    'always',
+    None,
+    'None',
+    'none',
+    ''
+)
+
 
 class HostConfig(object):
     def __init__(self, properties={}):
