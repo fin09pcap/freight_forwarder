@@ -45,9 +45,9 @@ class ContainerShip(object):
             client_certs = (self.SSL_CERT_PATH, self.SSL_KEY_PATH) if self.SSL_KEY_PATH and self.SSL_CERT_PATH else None
             tls_config   = docker.tls.TLSConfig(client_cert=client_certs, ca_cert=self.SSL_CA_PATH, verify=self.SSL_VERIFY)
 
-            self._client_session = docker.Client(self.url.geturl(), tls=tls_config, timeout=DOCKER_DEFAULT_TIMEOUT, version=self.API_VERSION)
+            self._client_session = docker.AutoVersionClient(self.url.geturl(), tls=tls_config, timeout=DOCKER_DEFAULT_TIMEOUT)
         else:
-            self._client_session = docker.Client(self.url.geturl(), timeout=DOCKER_DEFAULT_TIMEOUT, version=self.API_VERSION)
+            self._client_session = docker.AutoVersionClient(self.url.geturl(), timeout=DOCKER_DEFAULT_TIMEOUT)
 
         self._docker_info = self._client_session.version()
         self._injector = None
