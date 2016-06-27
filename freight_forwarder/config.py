@@ -353,7 +353,7 @@ ROOT_SCHEME = {
                 }
             },
             'exposed_ports': {
-                 'is': {
+                'is': {
                     'one_of': [
                         {
                             'is': {
@@ -375,14 +375,13 @@ ROOT_SCHEME = {
                                 }
                             },
                         }
-
                     ]
-                 },
-                 '*': {
-                     'is': {
-                         'type': (six.string_types, dict)
-                     }
-                 }
+                },
+                '*': {
+                    'is': {
+                        'type': (six.string_types, dict)
+                    }
+                }
             },
             'extra_hosts': {
                 'is': {
