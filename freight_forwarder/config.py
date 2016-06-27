@@ -361,7 +361,7 @@ ROOT_SCHEME = {
                             },
                             '*': {
                                 'is': {
-                                    'type': six.string_types
+                                    'type': (six.string_types, dict)
                                 }
                             }
                         },
@@ -375,12 +375,11 @@ ROOT_SCHEME = {
                                 }
                             },
                         }
-
                     ]
                 },
                 '*': {
                     'is': {
-                        'type': six.string_types
+                        'type': (six.string_types, dict)
                     }
                 }
             },

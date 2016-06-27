@@ -615,7 +615,6 @@ class FreightForwarder(object):
     def __complete_distribution(self, commercial_invoice):
         cleaned = []
         for container_ships in six.itervalues(commercial_invoice.container_ships):
-
             for address, container_ship in six.iteritems(container_ships):
                 if address in cleaned:
                     continue

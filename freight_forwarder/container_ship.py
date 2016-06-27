@@ -348,7 +348,6 @@ class ContainerShip(object):
 
             if containers:
                 for name, container in six.iteritems(containers):
-                    # TODO: add function to container obj to see if its running.
                     if not container.state().get('running'):
                         container.delete()
 

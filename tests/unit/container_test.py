@@ -210,6 +210,7 @@ class ContainerTest(unittest.TestCase):
         with mock.patch.object(Container, '_find_by_id'):
             container = Container(self.docker_client, name='foo', image='bar', id='123')
             container.id = '123'
+            container.name = 'foo'
             container.start_transcribing()
             self.assertTrue(container._transcribe)
             self.assertIsNotNone(container._transcribe_queue)

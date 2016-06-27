@@ -110,7 +110,7 @@ class Container(object):
     def delete(self, remove_volumes=False, links=False, force=False):
         """
         Delete the container on the host. Inspects the container to determine if it is in a `dead` state. This is
-        verified to take alterntaive action and not error out when deploying to a host
+        verified to take alternative action and not error out when deploying to a host
         """
         response = None
 
@@ -139,7 +139,6 @@ class Container(object):
         except APIError as e:
             if e.response.status_code == 404:
                 logger.info('is unable to located.', extra={'formatter': 'container', 'container': self.name})
-                return response
             else:
                 logger.exception('Exception raised when deleting \'{0}\'. id: \'{1}\'. host: \'{2}\'\n'
                                  'Exception: {3}'.format(self.name,
@@ -148,7 +147,6 @@ class Container(object):
                                                          APIError("Docker APIError: {0}".format(e.explanation),
                                                                   e.response)),
                                  exc_info=True)
-                return response
 
         return response
 
@@ -200,6 +198,10 @@ class Container(object):
             else:
                 exit_code = self._wait_for_exit_code()
 
+            if self._transcribe_proc:
+                if exit_code == 0:
+                    self.stop_transcribing()
+
             return True if exit_code == 0 else False
 
     def start_transcribing(self):
@@ -215,10 +217,17 @@ class Container(object):
 
         if self._transcribe_proc is None:
             # add for debugging
-            # print "Starting to record container output for {0}.".format(self.name)
+            logger.info("Starting to record container output for {0}.".format(self.name))
             self._transcribe_proc = Process(target=self._start_recording, args=(self._transcribe_queue,))
             self._transcribe_proc.daemon = True
             self._transcribe_proc.start()
+
+    def stop_transcribing(self):
+        logger.info("Deleting transcribing process for {0}".format(self.name))
+        while not self._transcribe_queue.empty():
+            self._transcribe_queue.get_nowait()
+        if self._transcribe_proc:
+            self._transcribe_proc.terminate()
 
     def state(self):
         """
@@ -247,6 +256,7 @@ class Container(object):
         stop the container
         """
         logger.info('is being stopped', extra={'formatter': 'container', 'container': self.name})
+        # TODO - this could be updated to reflect a timeout option
         response = self.client.stop(self.id)
 
         while self.state()['running']:
@@ -262,10 +272,11 @@ class Container(object):
 
         return response
 
-    def dump_logs(self):
-        """dump entirety of the container logs to stdout
-
-            :returns None
+    def dump_logs(self, tail=100):
+        """
+        dump entirety of the container logs to stdout
+        :param tail:
+        :return:
         """
         msg = "log dump: \n"
         if self._transcribe:
@@ -278,7 +289,8 @@ class Container(object):
 
                     msg = '{0} {1}'.format(msg, logs)
         else:
-            logs = self.client.logs(self.id, stdout=True, stderr=True, stream=False, timestamps=False, tail='all')
+            logs = self.client.logs(self.id, stdout=True, stderr=True, stream=False, timestamps=False, tail=tail,
+                                    timestamp=False, since=None, follow=None)
             if isinstance(logs, six.binary_type):
                 logs = logs.decode(encoding='UTF-8', errors="ignore")
 
@@ -448,9 +460,6 @@ class Container(object):
         self.created_at  = dateutil.parser.parse(response['created'], ignoretz=True)
         self.config      = ContainerConfig(response['config'])
         self.host_config = HostConfig(response['host_config'])
-
-        if self._transcribe:
-            self.start_transcribing()
 
     def _handler(self, signum=None, frame=None):
         # add for debugging

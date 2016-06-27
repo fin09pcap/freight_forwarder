@@ -1,11 +1,14 @@
 # Change Log
 #### All notable changes to this project will be documented in this file. This project adheres to Semantic Versioning.
 
-## [1.0.4-dev] - 2016-06-07
+## [1.0.4-dev] - 2016-06-30
 * resolved bug in logic of `FreightForwarder.export` to verify `bill_of_lading` before starting the export operation
-* added better error handling when deleting a container
+* added better logging of exception when deleting a container
+* updated `exposed_ports` to allow dict
+* updated `Container` object to not automatically create a process and queue for containers with 
+  log_config not equal to `json-file`
 
-## [1.0.3-dev] - 2016-05-18
+## [1.0.3] - 2016-05-25
 * host service definition normalized to match service alias allowing for all host container ships to be 
   referenced by the correct alias
 
