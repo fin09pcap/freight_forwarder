@@ -153,8 +153,8 @@ class Container(object):
 
                 # returns None on success
                 self.client.start(self.id)
-                if self._transcribe:
-                    self.start_transcribing()
+                # if self._transcribe:
+                #     self.start_transcribing()
 
             except APIError as e:
                 #
@@ -242,14 +242,16 @@ class Container(object):
         """
         msg = "log dump: \n"
         if self._transcribe:
-            if self._transcribe_queue:
-                while not self._transcribe_queue.empty():
-                    logs = self._transcribe_queue.get()
-
-                    if isinstance(logs, six.binary_type):
-                        logs = logs.decode(encoding='UTF-8', errors="ignore")
-
-                    msg = '{0} {1}'.format(msg, logs)
+            logs = 'refer to the configured log_driver to reference output of the container'
+            # if self._transcribe_queue:
+            #     while not self._transcribe_queue.empty():
+            #         logs = self._transcribe_queue.get()
+            #
+            #         if isinstance(logs, six.binary_type):
+            #             logs = logs.decode(encoding='UTF-8', errors="ignore")
+            #
+            #         msg = '{0} {1}'.format(msg, logs)
+            msg = '{0} {1}'.format(msg, logs)
         else:
             logs = self.client.logs(self.id, stdout=True, stderr=True, stream=False, timestamps=False, tail='all')
             if isinstance(logs, six.binary_type):
@@ -422,8 +424,8 @@ class Container(object):
         self.config      = ContainerConfig(response['config'])
         self.host_config = HostConfig(response['host_config'])
 
-        if self._transcribe:
-            self.start_transcribing()
+        # if self._transcribe:
+        #     self.start_transcribing()
 
     def _handler(self, signum=None, frame=None):
         # add for debugging

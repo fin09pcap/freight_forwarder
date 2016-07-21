@@ -1,7 +1,7 @@
 # -*- coding: utf-8; -*-
 from __future__ import unicode_literals
 
-VERSION = "1.0.3-dev"
+VERSION = "1.0.3-TPL976"
 
 # docker api
 DOCKER_DEFAULT_TIMEOUT = 120
